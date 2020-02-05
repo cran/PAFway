@@ -4,8 +4,13 @@
 \alias{draw_heatmap}
 \title{Draw network of enriched functional annotation pairs as a heatmap}
 \usage{
-draw_heatmap(graph, adjMethod = NULL, xlab = "downstream",
-  ylab = "upstream", colPal = NULL)
+draw_heatmap(
+  graph,
+  adjMethod = NULL,
+  xlab = "downstream",
+  ylab = "upstream",
+  colPal = NULL
+)
 }
 \arguments{
 \item{graph}{The output of either the pafway or pafway_edge_weight functions}

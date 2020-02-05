@@ -4,8 +4,15 @@
 \alias{pafway_edge_weights}
 \title{Find pairwise-associations between annotations in a network with edge weights.}
 \usage{
-pafway_edge_weights(GO, edges, GOtypes, exact = TRUE,
-  adjustByEdgeCount = FALSE, step = 0.001, thresholdZero = 1e-04)
+pafway_edge_weights(
+  GO,
+  edges,
+  GOtypes,
+  exact = TRUE,
+  adjustByEdgeCount = FALSE,
+  step = 0.001,
+  thresholdZero = 1e-04
+)
 }
 \arguments{
 \item{GO}{A vector of Strings, equal to the length of all the nodes.  The names of the vector should be the names of the nodes.  The values should either be the functional annotations, or a concatenation of the functional annotations, separated by a "_" symbol.}

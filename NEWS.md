@@ -1,5 +1,8 @@
 NEWS:
 
+05-02-2020: Added a function pafway_meta (see vignette)
+
+
 09-12-2019: Made the following changes:
 1. Added some statistics explanation in the vignette
 2. Changed the title of the network visualisation in the draw_network function.

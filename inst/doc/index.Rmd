@@ -8,7 +8,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-The purpose of this package is to allow the user to find pairs of annotations that are enriched in a network.  For instance, the network might be a gene regulatory network, where the nodes represent genes and the edges represent regulatory interactions between pairs of genes.  Each gene might have one or more functional annotation labels (such as GO terms) associated with them.  The user might be interested in learning whether a specific GO term is enriched upstream of a second GO term.  This function works with directed networks, with and without edge weights.  The results can be depicted as either a network or a heatmap.  
+The purpose of this package is to allow the user to find pairs of annotations that are enriched in a network.  For instance, the network might be a gene regulatory network, where the nodes represent genes and the edges represent regulatory interactions between pairs of genes.  Each gene might have one or more functional annotation labels (such as GO terms) associated with them.  The user might be interested in learning whether a specific GO term is enriched upstream of a second GO term.  This function works with directed networks, with and without edge weights.  The results can be depicted as either a network or a heatmap.  More complete information is available here: http://eprints.whiterose.ac.uk/154294/
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -157,3 +157,21 @@ If you are running pafway (specifically with edge weights) on a really big netwo
 b=pafway_edge_weights(randomGO, cbind(edgesRandom, random_edge_weights), unique(randomGO), step=0.001, thresholdZero=0.0001)
 print(b[1:5, 1:5])
 ```
+
+### Explanation of pafway_meta
+Genes may have multiple functional annotations associated with them.  For instance, it is often the case that \emph{all} genes that have one GO term will also have a different specific GO term, because GO terms have hierarchical arrangements (e.g. all genes involved in `blue light sensing' are also 'light sensing').  
+
+This does not directly impact the calculation of p-values in PAFway, but it would potentially impact how we interpret the results from a biological perspective.  The aim of PAFway is to evaluate whether an edge between two functional annotations occurs more frequently than would be expected by a null model in which edges are randomly distributed in the network.  In this scenario, it does not matter how much overlap there is between the functional annotations.  Intuitively this makes sense:  Let’s say you randomly select two words from a book and you want to calculate the probability that the first word you select contains the letter `a’ and the second word you select contains the letter `b’.  The expected probability of this happening is $p_a * p_b$, and it does not depend on whether the letters `a’ and `b’ tend to appear together in the same word. This means that the calculation in PAFway is correct, as is.
+
+However, this also means that the frequencies of pairs of edges are correlated with one another.  For instance, if GO term `a' is enriched upstream of `b', and many genes that have GO term `a' are also labelled with GO term `c', then there may also be an enrichment for edges between genes containing the GO terms `c' and `b'.  If there is an overlap between GO terms `b' and `d', then there may also be an enrichment for edges between `c' and `d'. Biologists may be less interested in an enrichment between GO terms `c' and `d' if this enrichment is completely explained by the enrichment between GO terms `a' and `b'.
+
+For this reason, we may want to know whether we observe more edges between genes containing the GO terms `c' and `d', given (i) the co-occurrence of functional annotations `a' and `c' (ii) the co-occurrence of functional annotations `b' and `d' (iii) the frequency of edges containing `a' and `b'.  In particular, let $f_{i,j}$ be the number of times we observe an edge between genes with functional annotations $i$ and $j$.  Let $p(j|i)$ be the probability of a gene having the functional annotation $j$ given that it has the functional annotation $i$.  We use the notation $!i$ to signify \emph{not} i.  We can calculate the expected value of $f_{c,d}$ using the following formula:
+
+\begin{align*}
+\mathbb{E}(f_{c,d})=& f_{a,b}p(c|a)p(d|b) + \\ 
+& f_{!a,b}p(c|!a)p(d|b) + \\
+& f_{a,!b}p(c|a)p(d|!b) + \\
+& f_{!a,!b}p(c|!a)p(d|!b)
+\end{align*}
+
+Then, we can compare the observed count with the expected count: $f_{c,d}/\mathbb{E}(f_{c,d})$. 
